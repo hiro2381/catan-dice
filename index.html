@@ -47,7 +47,7 @@
 
     .dice {
       background: #2a2a2a;
-      border: 2px solid transparent;
+      border: 3px solid transparent;
       border-radius: 12px;
       text-align: center;
       padding: 16px 8px;
@@ -63,21 +63,24 @@
     }
 
     .glow-green {
-      border: 2px solid #49d17d;
-      box-shadow: 0 0 18px #49d17d;
+      border-color: #49d17d !important;
+      box-shadow: 0 0 22px #49d17d, 0 0 6px #49d17d inset;
       background: #173522;
+      color: #d8ffe4;
     }
 
     .glow-yellow {
-      border: 2px solid #ffd84f;
-      box-shadow: 0 0 18px #ffd84f;
+      border-color: #ffd84f !important;
+      box-shadow: 0 0 22px #ffd84f, 0 0 6px #ffd84f inset;
       background: #3b3318;
+      color: #fff2b0;
     }
 
     .glow-blue {
-      border: 2px solid #4f8cff;
-      box-shadow: 0 0 18px #4f8cff;
+      border-color: #4f8cff !important;
+      box-shadow: 0 0 22px #4f8cff, 0 0 6px #4f8cff inset;
       background: #17243b;
+      color: #d9e7ff;
     }
 
     button {
@@ -110,7 +113,7 @@
     }
 
     .player {
-      border: 1px solid #333;
+      border: 2px solid #333;
       border-radius: 12px;
       padding: 12px;
       margin-top: 10px;
@@ -129,18 +132,21 @@
     }
 
     .hit-player-green {
-      border-color: #49d17d;
-      box-shadow: 0 0 14px #49d17d;
+      border-color: #49d17d !important;
+      box-shadow: 0 0 16px #49d17d;
+      background: #1d3225;
     }
 
     .hit-player-yellow {
-      border-color: #ffd84f;
-      box-shadow: 0 0 14px #ffd84f;
+      border-color: #ffd84f !important;
+      box-shadow: 0 0 16px #ffd84f;
+      background: #373017;
     }
 
     .hit-player-blue {
-      border-color: #4f8cff;
-      box-shadow: 0 0 14px #4f8cff;
+      border-color: #4f8cff !important;
+      box-shadow: 0 0 16px #4f8cff;
+      background: #1a263b;
     }
 
     .player-title {
@@ -201,6 +207,13 @@
       line-height: 1.6;
       margin-top: 8px;
     }
+
+    .test-note {
+      color: #bbb;
+      font-size: 13px;
+      margin-top: 8px;
+      line-height: 1.6;
+    }
   </style>
 </head>
 
@@ -239,6 +252,14 @@
 
     <div class="button-row">
       <button onclick="rollDice()">サイコロを振る</button>
+      <button class="secondary" onclick="testBlueHit()">青テスト</button>
+      <button class="secondary" onclick="testGreenHit()">緑テスト</button>
+      <button class="secondary" onclick="testYellowHit()">黄テスト</button>
+    </div>
+
+    <div class="test-note">
+      テスト：硬貨・青を1以上にして青テストを押すと青く光る。<br>
+      紙・緑なら緑テスト、布・黄なら黄テスト。
     </div>
 
     <div class="status" id="lastRoll">まだ振っていません</div>
@@ -248,7 +269,7 @@
     </div>
 
     <div class="rule-note">
-      判定：硬貨→青、紙→緑、布→黄。<br>
+      判定：紙→緑、布→黄、硬貨→青。<br>
       レベル1なら赤1・2、レベル2なら赤1・2・3、レベル5なら赤1〜6で対象。
     </div>
   </div>
@@ -483,8 +504,6 @@
         const level = Number(playerData?.commodities?.[target.key] || 0);
 
         /*
-          カタン騎士版の進歩カード判定用。
-
           レベル0 → 対象なし
           レベル1 → 赤1,2
           レベル2 → 赤1,2,3
@@ -555,6 +574,39 @@
           event
         },
         lastRollTime: timeText
+      });
+    }
+
+    function testBlueHit() {
+      roomRef.update({
+        dice: {
+          red: 1,
+          yellow: 1,
+          event: "青"
+        },
+        lastRollTime: "青テスト"
+      });
+    }
+
+    function testGreenHit() {
+      roomRef.update({
+        dice: {
+          red: 1,
+          yellow: 1,
+          event: "緑"
+        },
+        lastRollTime: "緑テスト"
+      });
+    }
+
+    function testYellowHit() {
+      roomRef.update({
+        dice: {
+          red: 1,
+          yellow: 1,
+          event: "黄"
+        },
+        lastRollTime: "黄テスト"
       });
     }
 
