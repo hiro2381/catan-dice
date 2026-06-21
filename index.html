@@ -258,7 +258,7 @@
     </div>
 
     <div class="test-note">
-      テスト：硬貨・青を1以上にして青テストを押すと青く光る。<br>
+      テスト：自分の硬貨・青を1以上にして青テストを押すと、自分の画面だけ青く光る。<br>
       紙・緑なら緑テスト、布・黄なら黄テスト。
     </div>
 
@@ -405,15 +405,24 @@
         const div = document.createElement("div");
         div.className = "player";
 
-        if (String(id) === String(myPlayerId)) {
+        const isMe = String(id) === String(myPlayerId);
+        const isTurn = Number(id) === Number(currentTurn);
+        const isHit = progressResult.hitPlayerIds.includes(String(id));
+
+        if (isMe) {
           div.classList.add("me");
         }
 
-        if (Number(id) === Number(currentTurn)) {
+        if (isTurn) {
           div.classList.add("turn");
         }
 
-        if (progressResult.hitPlayerIds.includes(String(id))) {
+        /*
+          ここが変更点。
+          自分の画面では、自分が対象のときだけ自分の枠を光らせる。
+          他人だけが対象の場合、他人の枠は光らせない。
+        */
+        if (isMe && isHit) {
           if (progressResult.color === "緑") {
             div.classList.add("hit-player-green");
           }
@@ -430,9 +439,9 @@
         div.innerHTML = `
           <div class="player-title">
             ${playerData.name}
-            ${String(id) === String(myPlayerId) ? " / 自分" : ""}
-            ${Number(id) === Number(currentTurn) ? " / 手番" : ""}
-            ${progressResult.hitPlayerIds.includes(String(id)) ? " / 進歩カード対象" : ""}
+            ${isMe ? " / 自分" : ""}
+            ${isTurn ? " / 手番" : ""}
+            ${isMe && isHit ? " / 進歩カード対象" : ""}
           </div>
 
           ${levelRow(id, "paper", "紙・緑", commodities.paper || 0)}
@@ -531,13 +540,29 @@
         return;
       }
 
-      if (result.hitPlayers.length > 0) {
+      const isMyHit = result.hitPlayerIds.includes(String(myPlayerId));
+
+      /*
+        ここが一番大事。
+        自分が対象のときだけイベントダイスを光らせる。
+        他人が対象でも、自分が対象外なら光らせない。
+      */
+      if (isMyHit) {
         eventDiceBox.classList.add(result.glowClass);
 
         progressInfo.innerHTML = `
-          <span class="progress-hit">進歩カード対象あり</span><br>
+          <span class="progress-hit">あなたが進歩カード対象</span><br>
           色：${result.color} / 赤：${result.red}<br>
           対象：${result.hitPlayers.join("、")}
+        `;
+        return;
+      }
+
+      if (result.hitPlayers.length > 0) {
+        progressInfo.innerHTML = `
+          自分は対象外<br>
+          色：${result.color} / 赤：${result.red}<br>
+          他の対象：${result.hitPlayers.join("、")}
         `;
       } else {
         progressInfo.textContent =
